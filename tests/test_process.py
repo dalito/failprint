@@ -1,7 +1,6 @@
 """Tests for the `process` module."""
 
 from __future__ import annotations
-
 import sys
 
 import pytest
@@ -31,6 +30,13 @@ def test_run_unknown_command() -> None:
     # maybe this exception should be caught in the code?
     with pytest.raises(FileNotFoundError):
         run_subprocess("mlemlemlemlemle")
+
+
+def test_run_unknown_shell_command_unicode() -> None:
+    """Run an unknown command in a shell."""
+    code, output = run_subprocess("echo öäß", shell=True)  # noqa: S604
+    assert code == 0
+    assert "öäß" in output
 
 
 @pytest.mark.skipif(WINDOWS, reason="no PTY support on Windows")

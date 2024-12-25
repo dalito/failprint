@@ -32,6 +32,13 @@ def test_run_command() -> None:
     assert cli.main(["--", sys.executable, "-c", "print('hello')"]) == 0
 
 
+def test_run_command_unicode(capsys: pytest.CaptureFixture) -> None:
+    """Run a simple command."""
+    assert cli.main(["--", sys.executable, "-c", "print('hälö ¢')"]) == 0
+    captured = capsys.readouterr()
+    assert 'hälö ¢' in captured.out
+
+
 def test_accept_custom_format(capsys: pytest.CaptureFixture) -> None:
     """Run a command with a custom output format.
 
