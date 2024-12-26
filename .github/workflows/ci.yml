@@ -5,6 +5,7 @@ on:
   pull_request:
     branches:
     - main
+  workflow_dispatch:
 
 defaults:
   run:
@@ -108,3 +109,16 @@ jobs:
 
     - name: Run the test suite
       run: make test
+
+    - name: Run tests on Windows with cp850 locale
+      if: ${{ matrix.os == 'windows-latest' }}
+      shell: pwsh
+      env:
+        # See https://docs.python.org/3/library/io.html#io-encoding-warning
+        PYTHONWARNDEFAULTENCODING: 1
+      run: |
+        echo "Initial $OutputEncoding (should be UTF-8):", $OutputEncoding
+        echo "Set $OutputEncoding to cp850 as for many European Windows installations"
+        $OutputEncoding = [console]::InputEncoding = [console]::OutputEncoding = [System.Text.Encoding]::GetEncoding(850)
+        $OutputEncoding
+        uv run pytest -v
