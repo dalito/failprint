@@ -46,17 +46,20 @@ def run_subprocess(
         stdout_opt = subprocess.PIPE
         stderr_opt = subprocess.STDOUT if capture == Capture.BOTH else subprocess.PIPE
 
+    encoding = os.device_encoding(0)
     if shell and not isinstance(cmd, str):
         cmd = printable_command(cmd)
-
+    
+    if stdin is not None:
+        encoding = "utf8"
+        
     process = subprocess.run(  # noqa: S603
         cmd,
         input=stdin,
         stdout=stdout_opt,
         stderr=stderr_opt,
         shell=shell,
-        text=True,
-        encoding="utf8",
+        encoding=encoding,
         check=False,
     )
 

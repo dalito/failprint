@@ -129,8 +129,8 @@ class CaptureManager:
 
         # Open devnull if needed.
         if self._capture in {Capture.STDOUT, Capture.STDERR}:
-            self._devnull = open(os.devnull, "w")
-
+            self._devnull = open(os.devnull, encoding="utf8", mode="w")
+        
         # Create temporary file.
         # Initially we used a pipe but it would hang on writes given enough output.
         self._temp_file = tempfile.TemporaryFile("w+", encoding="utf8", prefix="failprint-")
@@ -160,12 +160,12 @@ class CaptureManager:
         exc_value: BaseException | None,
         exc_traceback: TracebackType | None,
     ) -> None:
-        if self._capture is Capture.NONE:
-            return
-
-        # Flush everything before reading from pipe.
+        # Flush everything before reading from temp file.
         sys.stdout.flush()
         sys.stderr.flush()
+
+        if self._capture is Capture.NONE:
+            return
 
         # Restore stdin to its previous value.
         if self._saved_stdin is not None:
@@ -185,6 +185,7 @@ class CaptureManager:
             self._output = self._temp_file.read()
             self._temp_file.close()
 
+
     def __str__(self) -> str:
         return self.output
 
@@ -195,9 +196,9 @@ class CaptureManager:
         Raises:
             RuntimeError: When accessing captured output before exiting the context manager.
         """
-        if self._output is None:
+        if self._output is None and self._capture is not Capture.NONE:
             raise RuntimeError("Not finished capturing")
-        return self._output
+        return self._output  # type: ignore
 
 
 __all__ = ["Capture", "CaptureManager"]
