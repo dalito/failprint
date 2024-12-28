@@ -33,7 +33,7 @@ def test_run_command() -> None:
 
 
 def test_run_command_unicode(capsys: pytest.CaptureFixture) -> None:
-    """Run a simple command."""
+    """Run a simple command with unicode in parameters."""
     assert cli.main(["--", sys.executable, "-c", "print('hälö ¢')"]) == 0
     captured = capsys.readouterr()
     assert 'hälö ¢' in captured.out
