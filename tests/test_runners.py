@@ -349,6 +349,10 @@ def test_run_lazy_callable_without_calling_it(capfd: pytest.CaptureFixture) -> N
     assert "greet('tim')" in outerr.out
 
 
+@pytest.mark.skipif(
+    WINDOWS, 
+    reason="TODO: fix to run without PYTHONLEGACYWINDOWSSTDIO=1 which has side-effects."
+)
 def test_capture_function_and_subprocess_output(capsys: pytest.CaptureFixture) -> None:
     """Assert we capture everything when running a function.
 
