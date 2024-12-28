@@ -33,6 +33,13 @@ def test_run_unknown_command() -> None:
         run_subprocess("mlemlemlemlemle")
 
 
+def test_run_unknown_shell_command_unicode() -> None:
+    """Run an unknown command in a shell."""
+    code, output = run_subprocess("echo öäß", shell=True)  # noqa: S604
+    assert code == 0
+    assert "öäß" in output
+
+
 @pytest.mark.skipif(WINDOWS, reason="no PTY support on Windows")
 def test_run_pty_subprocess_capture_none(capsys: pytest.CaptureFixture) -> None:
     """Run a PTY subprocess without capturing output.
