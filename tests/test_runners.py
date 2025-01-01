@@ -362,13 +362,19 @@ def test_capture_function_and_subprocess_output(capsys: pytest.CaptureFixture) -
         print("print")
         sys.stdout.write("sys stdout write\n")
         os.system("echo os system")  # noqa: S605,S607
-        subprocess.run(["sh", "-c", "echo sh -c echo"], check=False)  # noqa: S603,S607
+        if WINDOWS:
+            subprocess.run(["cmd", "/c", "echo cmd /c echo"], check=False)
+        else:
+            subprocess.run(["sh", "-c", "echo sh -c echo"], check=False)  # noqa: S603,S607
 
     with capsys.disabled(), Capture.BOTH.here() as captured:
             function()
 
     lines = [ln.rstrip() for ln in str(captured).rstrip().split("\n")]
-    assert lines == ["print", "sys stdout write", "os system", "sh -c echo"]
+    if WINDOWS:
+        assert lines == ["print", "sys stdout write", "os system", "cmd /c echo"]
+    else: 
+        assert lines == ["print", "sys stdout write", "os system", "sh -c echo"]
 
 
 @pytest.mark.timeout(5, method="thread")
