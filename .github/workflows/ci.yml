@@ -115,15 +115,20 @@ jobs:
         PYTHONWARNDEFAULTENCODING: 1
       run: |
         echo "Initial $OutputEncoding (should be UTF-8):", $OutputEncoding
-        echo "Set $OutputEncoding to cp850 as for many European Windows installations"
-        $OutputEncoding = [console]::InputEncoding = [console]::OutputEncoding = [System.Text.Encoding]::GetEncoding(850)
-        $OutputEncoding
         python --version
         python -c "import os; print(f'stdin encoding : {os.device_encoding(0)}')"
         python -c "import os; print(f'stdout encoding: {os.device_encoding(1)}')"
         python -c "import sys; print(f'utf8 mode: {sys.flags.utf8_mode}')"
+        python -c "import locale; print(f'locale encoding: {locale.getencoding()}')"
+        echo "Set $OutputEncoding to cp850 as for many European Windows installations"
+        $OutputEncoding = [console]::InputEncoding = [console]::OutputEncoding = [System.Text.Encoding]::GetEncoding(850)
+        $OutputEncoding
+        python -c "import os; print(f'stdin encoding : {os.device_encoding(0)}')"
+        python -c "import os; print(f'stdout encoding: {os.device_encoding(1)}')"
+        python -c "import sys; print(f'utf8 mode: {sys.flags.utf8_mode}')"
+        python -c "import locale; print(f'locale encoding: {locale.getencoding()}')"
         uv run pytest --capture=no
 
-    - name: Run the test suite
-      run: make test
+    # - name: Run the test suite
+    #   run: make test
 

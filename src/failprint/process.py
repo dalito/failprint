@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import contextlib
+import locale
 import os
 import subprocess
 import sys
@@ -46,13 +47,18 @@ def run_subprocess(
         stdout_opt = subprocess.PIPE
         stderr_opt = subprocess.STDOUT if capture == Capture.BOTH else subprocess.PIPE
 
-    encoding = os.device_encoding(0)
     if shell and not isinstance(cmd, str):
         cmd = printable_command(cmd)
     
+    encoding = None
     if stdin is not None:
         encoding = "utf8"
-        
+    if encoding is None:
+        encoding = os.device_encoding(1)
+    # gh windows runners report None for os.device_encoding
+    if encoding is None:
+        encoding = "cp850"
+    
     process = subprocess.run(  # noqa: S603
         cmd,
         input=stdin,

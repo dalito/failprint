@@ -361,6 +361,7 @@ def test_capture_function_and_subprocess_output(capsys: pytest.CaptureFixture) -
     def function() -> None:
         print("print")
         sys.stdout.write("sys stdout write\n")
+        sys.stdout.flush()
         os.system("echo os system")  # noqa: S605,S607
         if WINDOWS:
             subprocess.run(["cmd", "/c", "echo cmd /c echo"], check=False)
