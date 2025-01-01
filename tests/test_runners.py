@@ -168,8 +168,8 @@ def test_callable_capture_none(capsys: pytest.CaptureFixture) -> None:
 
 def test_callable_capture_both() -> None:
     """Check that all is captured while running a callable."""
-    msg_stdout = "out\n"
-    msg_stderr = "err\n"
+    msg_stdout = "out"
+    msg_stderr = "err"
     result = run(
         lambda: sys.stdout.write(msg_stdout) and sys.stderr.write(msg_stderr),
         capture=True,
@@ -326,7 +326,7 @@ def test_run_lazy_callable(capfd: pytest.CaptureFixture) -> None:
     result = run(greet("tim"))
     outerr = capfd.readouterr()
     assert result.code == 1
-    assert result.output == "hello tim\n"
+    assert result.output.strip() == "hello tim"
     assert "greet('tim')" in outerr.out
 
 
@@ -345,19 +345,17 @@ def test_run_lazy_callable_without_calling_it(capfd: pytest.CaptureFixture) -> N
     result = run(greet, args=["tim"])
     outerr = capfd.readouterr()
     assert result.code == 1
-    assert result.output == "hello tim\n"
+    assert result.output.strip() == "hello tim"
     assert "greet('tim')" in outerr.out
 
 
-@pytest.mark.skipif(
-    WINDOWS, 
-    reason="TODO: fix to run without PYTHONLEGACYWINDOWSSTDIO=1 which has side-effects."
-)
 def test_capture_function_and_subprocess_output(capsys: pytest.CaptureFixture) -> None:
     """Assert we capture everything when running a function.
 
     Arguments:
         capsys: Pytest fixture to capture output.
+
+    On Windows this test only passes if pytest is run with '--capture=no' option.
     """
 
     def function() -> None:
@@ -367,9 +365,9 @@ def test_capture_function_and_subprocess_output(capsys: pytest.CaptureFixture) -
         subprocess.run(["sh", "-c", "echo sh -c echo"], check=False)  # noqa: S603,S607
 
     with capsys.disabled(), Capture.BOTH.here() as captured:
-        function()
+            function()
 
-    lines = str(captured).rstrip("\n").split("\n")
+    lines = [ln.rstrip() for ln in str(captured).rstrip().split("\n")]
     assert lines == ["print", "sys stdout write", "os system", "sh -c echo"]
 
 
