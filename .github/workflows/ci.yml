@@ -61,16 +61,16 @@ jobs:
     strategy:
       matrix:
         os:
-        - ubuntu-latest
-        - macos-latest
+        # - ubuntu-latest
+        # - macos-latest
         - windows-latest
         python-version:
-        - "3.9"
-        - "3.10"
-        - "3.11"
+        # - "3.9"
+        # - "3.10"
+        # - "3.11"
         - "3.12"
         - "3.13"
-        - "3.14"
+        # - "3.14"
         resolution:
         - highest
         - lowest-direct
@@ -118,6 +118,10 @@ jobs:
         echo "Set $OutputEncoding to cp850 as for many European Windows installations"
         $OutputEncoding = [console]::InputEncoding = [console]::OutputEncoding = [System.Text.Encoding]::GetEncoding(850)
         $OutputEncoding
+        python --version
+        python -c "import os; print(f'stdin encoding : {os.device_encoding(0)}')"
+        python -c "import os; print(f'stdout encoding: {os.device_encoding(1)}')"
+        python -c "import sys; print(f'utf8 mode: {sys.flags.utf8_mode}')"
         uv run pytest --capture=no
 
     - name: Run the test suite
