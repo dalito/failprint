@@ -118,7 +118,7 @@ jobs:
         echo "Set $OutputEncoding to cp850 as for many European Windows installations"
         $OutputEncoding = [console]::InputEncoding = [console]::OutputEncoding = [System.Text.Encoding]::GetEncoding(850)
         $OutputEncoding
-        uv run pytest -v
+        uv run pytest --capture=no
 
     - name: Run the test suite
       run: make test
